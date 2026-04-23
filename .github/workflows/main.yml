@@ -1,30 +1,54 @@
-# name of the workflow
-name: run python program
-    
-# define the event that triggers the workflow  
+name: Etl flow
+
 on:
   push:
     branches:
       - main
-  schedule:
-    - cron: '0 18 * * *'
 
 jobs:
-  ci-pipeline:
+  job1:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout code
-        uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v3
+      - name: Run wf1
+        run: python wf1.py
 
-      - name: Generate new Python problem
-        run: python generate_problem.py
+  job2:
+    needs: job1
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run wf2
+        run: python wf2.py
 
-      - name: Commit and push changes
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add .
-          git commit -m "Add new daily Python problem" || echo "No changes to commit"
-          git push
+  job3:
+    needs: job1
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run wf3
+        run: python wf3.py
+
+  job4:
+    needs: job2
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run wf4
+        run: python wf4.py
+
+  job5:
+    needs: job3
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run wf5
+        run: python wf5.py
+
+  job6:
+    needs: [job4, job5]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run wf6
+        run: python wf6.py
