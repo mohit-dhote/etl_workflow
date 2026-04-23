@@ -1,1 +1,30 @@
-hello
+# name of the workflow
+name: run python program
+    
+# define the event that triggers the workflow  
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 18 * * *'
+
+jobs:
+  ci-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate new Python problem
+        run: python generate_problem.py
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Add new daily Python problem" || echo "No changes to commit"
+          git push
